@@ -41,6 +41,13 @@ jobs:
             --backend-store-uri sqlite://mlflow.db \
             --default-artifact-root /tmp/mlruns
 
+      - name: Wait for MLflow
+        run: |
+          until curl -s http://localhost:5555; do
+            echo "Waiting for MLflow..."
+            sleep 2
+          done
+
       - name: Train the Model
         run: |
           python src/models/train_model.py   --config configs/model_config.yaml   --data data/processed/featured_house_data.csv   --models-dir models   --mlflow-tracking-uri http://localhost:5555
