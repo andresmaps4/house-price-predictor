@@ -1,12 +1,29 @@
 name: MLOps Pipeline
 
 on:
-  push:
-      branches: [ main ]
-      tags: [ 'V*.*.*' ]
-  pull_request:
-      branches: [ main ]
-      
+  workflow_dispatch:
+    inputs:
+      run_all:
+        description: 'Run all jobs'
+        required: false
+        default: 'true'
+      run_data_processing:
+        description: 'Run data processing job'
+        required: false
+        default: 'true'
+      run_model_training:
+        description: 'Run model training job'
+        required: false
+        default: 'true'
+      run_build_and_publish:
+        description: 'Run build and publish job'
+        required: false
+        default: 'true'
+  release:
+    types: [created]
+    branches: [ main ]
+    tags: [ 'V*.*.*' ]
+
 jobs:
   data-processing:
     runs-on: ubuntu-latest
@@ -110,7 +127,7 @@ jobs:
         docker rm mlflow-server || true
         docker rmi ghcr.io/mlflow/mlflow:latest || true
 
-  build-and-publish:
+  build_and_publish:
     needs: model-training
     runs-on: ubuntu-latest
 
